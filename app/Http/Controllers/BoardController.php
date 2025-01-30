@@ -12,12 +12,17 @@ class BoardController extends Controller
         return view('boards.index', compact('boards'));
     }
 
-    public function store(){
+    public function store(Request $request){
         $request->validate([
             'name' => 'required|string|max:255'
         ]);
         $board = auth()->user()->boards()->create($request->only('name'));
         return redirect()->route('boards.show', $board);
+    }
+
+    public function create()
+    {
+        return view('boards.create'); 
     }
 
     public function show(Board $board){
@@ -31,7 +36,7 @@ class BoardController extends Controller
                 'name' => 'required|string|max:255'
             ]);
         $board->update($request->only('name'));
-        return redirect()->route('boards.show', $board);
+        return  redirect()->back();
     }
 
     public function destroy(Board $board){
