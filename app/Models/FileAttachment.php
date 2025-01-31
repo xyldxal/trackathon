@@ -7,7 +7,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class FileAttachment extends Model
 {
-    protected $fillable = ['file_path', 'original_name'];
+    protected $fillable = ['card_id','file_path', 'original_name'];
+    protected $casts = ['file_path' => 'string'];
 
     public function card(): BelongsTo
     {

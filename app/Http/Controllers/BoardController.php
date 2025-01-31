@@ -26,7 +26,14 @@ class BoardController extends Controller
     }
 
     public function show(Board $board){
-        $board->load('lists.cards.files');
+        $board->load([
+            'boardLists' => function($query) {
+                $query->with(['cards' => function($q) {
+                    $q->with('files')->orderBy('position');
+                }])->orderBy('position');
+            }
+        ]);
+    
         return view('boards.show', compact('board'));
     }
 

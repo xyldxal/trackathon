@@ -10,11 +10,11 @@ class BoardListController extends Controller
 {
     public function store(Request $request, Board $board){
         $request->validate([
-            'name' => 'required|string|max:255'
+            'title' => 'required|string|max:255'
         ]);
 
-        $board->lists()->create([
-            'title' => $request->name,
+        $board->boardLists()->create([
+            'title' => $request->title,
             'position' => $board->lists->count() + 1
         ]);
 
@@ -30,5 +30,30 @@ class BoardListController extends Controller
         }
 
         return response()->json(['success' => true]);
+    }
+
+    public function reorder(Request $request, Board $board)
+    {
+        $request->validate([
+            'lists' => 'required|array',
+            'lists.*.id' => 'required|exists:board_lists,id',
+            'lists.*.position' => 'required|integer'
+        ]);
+    
+        foreach ($request->lists as $list) {
+            $board->boardLists()
+                ->where('id', $list['id'])
+                ->update(['position' => $list['position']]);
+        }
+    
+        return response()->json(['status' => 'success']);
+    }
+
+    public function destroy(BoardList $list)
+    {
+        $list->cards()->delete();
+        $list->delete();
+
+        return redirect()->back()->with('success', 'List deleted successfully');
     }
 }
